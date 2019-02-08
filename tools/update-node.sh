@@ -26,7 +26,7 @@ get_latest_github_release() {
     RESULT=$(printf "%s\n" "$GIT_INFO" | jq .assets[].browser_download_url -r | grep x86_64-linux)                         
 } 
 
-container=$(docker-compose -f "$BASEDIR/docker-compose.yml" ps -q mn)
+container=$(docker-compose -f "$BASEDIR/../docker-compose.yml" ps -q mn)
 if [ -z "$container" ]; then 
     # masternode is not running
     exit 1
@@ -40,7 +40,7 @@ ver=$(curl -Ls "$RESULT" | md5sum | awk '{ print $1 }')
 if echo "$current_ver" | grep -q "HASH: $ver"; then
     exit 0
 else
-    docker-compose -f "$BASEDIR/docker-compose.yml" build --no-cache && docker-compose -f "$BASEDIR/docker-compose.yml" up -d --force-recreate
+    docker-compose -f "$BASEDIR/../docker-compose.yml" build --no-cache && docker-compose -f "$BASEDIR/../docker-compose.yml" up -d --force-recreate
     sleep 10
     current_ver=$(sh "$BASEDIR/node-info.sh")
     if echo "$current_ver" | grep -q "HASH: $ver" "$BASEDIR/data/node.info"; then
