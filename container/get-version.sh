@@ -18,7 +18,7 @@
 #
 #  Contact: cryi@tutanota.com
 
-ver=$(/usr/sbin/uleadd -version | grep "Ulead Core Daemon version v" | \
+ver=$(uleadd -version | grep "Ulead Core Daemon version v" | \
     sed "s/ULead Core Daemon version v//" |  sed "s/-.*//")
 
 printf "%s" "$ver"

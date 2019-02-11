@@ -18,21 +18,31 @@
 #
 #  Contact: cryi@tutanota.com
 
-get_latest_github_release() {
-    GIT_INFO=$(curl -sL "https://api.github.com/repos/$1/releases/latest")                                       
-    RESULT=$(printf "%s\n" "$GIT_INFO" | jq .assets[].browser_download_url -r | grep x86_64-linux)                         
-} 
 
-get_latest_github_release "uleadapp/ulead"
+GIT_INFO=$(curl -sL "https://api.github.com/repos/uleadapp/ulead/releases/latest")                            
+URL=$(printf "%s\n" "$GIT_INFO" | jq .assets[].browser_download_url -r | grep linux | grep x86_64)                         
 
-curl -L "$RESULT" -o ./ulead.tar.gz
+if [ -f "./limits.conf" ]; then 
+    if grep "NODE_BINARY=" "./limits.conf"; then 
+        NODE_BINARY=$(grep "NODE_BINARY=" "./limits.conf" | sed 's/NODE_BINARY=//g')
+        if [ -n "$NODE_BINARY" ] && [ ! "$NODE_BINARY" = "auto" ]; then
+            URL=$NODE_BINARY
+        fi
+    fi
+fi
 
-tar -xzvf ./ulead.tar.gz
+case "$URL" in
+    *.tar.gz) 
+        curl -L "$URL" -o ./ulead.tar.gz
+        tar -xzvf ./ulead.tar.gz
+        rm -f ./ulead.tar.gz
+    ;;
+    *.zip)
+        curl -L "$URL" -o ./ulead.zip
+        unzip ./ulead.zip
+        rm -f ./ulead.zip
+    ;;
+esac
 
-md5sum ./ulead.tar.gz | awk '{ print $1 }' > node.hash
-
-DIR_NAME=$(ls -d ./*/ | grep ulead)
-cp -f "$DIR_NAME"bin/uleadd .
-cp -f "$DIR_NAME"bin/ulead-cli .
-rm -rf "$DIR_NAME"
-rm -f ./ulead.tar.gz
+cp -f "$(find . -name uleadd)" .
+cp -f "$(find . -name ulead-cli)" .

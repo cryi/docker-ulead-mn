@@ -40,7 +40,7 @@ ver=$(curl -Ls "$RESULT" | md5sum | awk '{ print $1 }')
 if echo "$current_ver" | grep -q "HASH: $ver"; then
     exit 0
 else
-    docker-compose -f "$BASEDIR/../docker-compose.yml" build --no-cache && docker-compose -f "$BASEDIR/../docker-compose.yml" up -d --force-recreate
+    docker-compose -f "$BASEDIR/../docker-compose.yml" build --no-cache && docker-compose -f "$BASEDIR/../docker-compose.yml" up -d --force-recreate -t 120
     sleep 10
     current_ver=$(sh "$BASEDIR/node-info.sh")
     if echo "$current_ver" | grep -q "HASH: $ver" "$BASEDIR/data/node.info"; then
