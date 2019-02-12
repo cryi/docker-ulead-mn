@@ -31,16 +31,20 @@ if [ -f "./limits.conf" ]; then
     fi
 fi
 
+FILE=ulead
+
 case "$URL" in
     *.tar.gz) 
-        curl -L "$URL" -o ./ulead.tar.gz
-        tar -xzvf ./ulead.tar.gz
-        rm -f ./ulead.tar.gz
+        curl -L "$URL" -o "./$FILE.tar.gz"
+        tar -xzvf "./$FILE.tar.gz"
+        md5sum "./$FILE.tar.gz" | awk '{ print $1 }' > node.hash
+        rm -f "./$FILE.tar.gz"
     ;;
     *.zip)
-        curl -L "$URL" -o ./ulead.zip
-        unzip ./ulead.zip
-        rm -f ./ulead.zip
+        curl -L "$URL" -o "./$FILE.zip"
+        unzip "./$FILE.zip"
+        md5sum "./$FILE.zip" | awk '{ print $1 }' > node.hash
+        rm -f "./$FILE.zip"
     ;;
 esac
 
